@@ -95,6 +95,11 @@ return {
       words = { enabled = true },
       zen = { enabled = true },
     },
+    config = function(_, opts)
+      require("snacks").setup(opts)
+      Snacks.input.enable()
+      vim.ui.select = Snacks.picker.select
+    end,
   },
 
   {

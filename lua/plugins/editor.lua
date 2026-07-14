@@ -54,9 +54,9 @@ return {
   {
     "saghen/blink.cmp",
     event = { "InsertEnter", "CmdlineEnter" },
-    dependencies = { "rafamadriz/friendly-snippets" },
+    dependencies = { "saghen/blink.lib", "rafamadriz/friendly-snippets" },
     opts = {
-      keymap = { preset = "default" },
+      keymap = { preset = "super-tab" },
       appearance = { nerd_font_variant = "mono" },
       completion = {
         documentation = { auto_show = true, auto_show_delay_ms = 300 },
@@ -64,6 +64,7 @@ return {
       },
       signature = { enabled = true, window = { border = "rounded" } },
       sources = { default = { "lsp", "path", "snippets", "buffer" } },
+      fuzzy = { implementation = "lua" },
     },
   },
 
