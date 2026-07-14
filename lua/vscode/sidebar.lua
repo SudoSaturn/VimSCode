@@ -3,13 +3,12 @@ local M = {}
 local rail_width = 4
 local panel_width = 38
 local namespace = vim.api.nvim_create_namespace("nvicode_activity_bar")
-local state = { active = "explorer", windows = {}, actions = {} }
+local state = { active = "explorer", windows = {}, actions = {}, opening = {} }
 
 local views = {
   { id = "explorer", icon = "󰉋", label = "Explorer" },
   { id = "search", icon = "󰍉", label = "Search" },
   { id = "source_control", icon = "󰊢", label = "Source Control" },
-  { id = "debug", icon = "󰃤", label = "Run and Debug" },
   { id = "extensions", icon = "󰏗", label = "Extensions" },
 }
 
@@ -39,6 +38,25 @@ local function close_pickers(except)
       end
     end
   end
+end
+
+local function existing_picker(source)
+  local pickers = Snacks.picker.get({ source = source, tab = false })
+  for index = 2, #pickers do
+    pickers[index]:close()
+  end
+  return pickers[1]
+end
+
+local function begin_open(id)
+  if state.opening[id] then
+    return false
+  end
+  state.opening[id] = true
+  vim.defer_fn(function()
+    state.opening[id] = nil
+  end, 200)
+  return true
 end
 
 local function current_picker()
@@ -188,39 +206,46 @@ local function finish_open(id, picker, focus)
 end
 
 function M.open_explorer()
+  if not begin_open("explorer") then
+    return
+  end
   close_pickers("explorer")
-  local picker = Snacks.picker.get({ source = "explorer", tab = false })[1] or Snacks.explorer()
+  local picker = existing_picker("explorer") or Snacks.explorer()
   return finish_open("explorer", picker, "list")
 end
 
 function M.open_search()
+  if not begin_open("search") then
+    return
+  end
   close_pickers("grep")
-  local picker = Snacks.picker.get({ source = "grep", tab = false })[1]
-    or Snacks.picker.grep({ auto_close = false, layout = panel_layout() })
+  local picker = existing_picker("grep") or Snacks.picker.grep({ auto_close = false, layout = panel_layout() })
   return finish_open("search", picker, "input")
 end
 
 function M.open_source_control()
+  if not begin_open("source_control") then
+    return
+  end
   close_pickers("git_status")
-  local picker = Snacks.picker.get({ source = "git_status", tab = false })[1]
+  local picker = existing_picker("git_status")
     or Snacks.picker.git_status({ auto_close = false, layout = panel_layout() })
   return finish_open("source_control", picker, "list")
 end
 
-function M.open_debug()
-  close_pickers()
-  require("dapui").open()
-  M.set_active("debug")
-  vim.schedule(M.ensure)
-end
-
 function M.open_extensions()
+  if not begin_open("extensions") then
+    return
+  end
   close_pickers()
   M.set_active("extensions")
   require("integrations.store").open()
 end
 
 function M.open_settings()
+  if not begin_open("settings") then
+    return
+  end
   M.set_active("settings")
   require("vscode.workbench").settings()
 end

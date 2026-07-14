@@ -8,7 +8,6 @@ local plugins = {
   -- Shared libraries must be available before their consumers are configured.
   github("nvim-lua/plenary.nvim"),
   github("nvim-tree/nvim-web-devicons"),
-  github("nvim-neotest/nvim-nio"),
   github("saghen/blink.lib"),
   github("rafamadriz/friendly-snippets"),
 
@@ -38,12 +37,6 @@ local plugins = {
   github("folke/trouble.nvim"),
   github("folke/todo-comments.nvim"),
   github("folke/persistence.nvim"),
-
-  -- Debug adapter integration.
-  github("mfussenegger/nvim-dap"),
-  github("rcarriga/nvim-dap-ui"),
-  github("theHamsta/nvim-dap-virtual-text"),
-  github("jay-babu/mason-nvim-dap.nvim"),
 
   -- Native extension marketplace and README rendering.
   github("OXY2DEV/markview.nvim"),

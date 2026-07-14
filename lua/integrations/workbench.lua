@@ -166,7 +166,6 @@ local function setup_which_key()
       { "<leader>e", desc = "Explorer" },
       { "<leader>b", group = "Editors" },
       { "<leader>c", group = "Code" },
-      { "<leader>d", group = "Run and Debug" },
       { "<leader>f", group = "File" },
       { "<leader>g", group = "Source Control" },
       { "<leader>q", group = "Window" },
