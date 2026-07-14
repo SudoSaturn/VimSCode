@@ -1,0 +1,44 @@
+return {
+  {
+    "mfussenegger/nvim-dap",
+    dependencies = {
+      {
+        "rcarriga/nvim-dap-ui",
+        dependencies = { "nvim-neotest/nvim-nio" },
+        opts = {},
+      },
+      { "theHamsta/nvim-dap-virtual-text", opts = {} },
+      "mason-org/mason.nvim",
+      "jay-babu/mason-nvim-dap.nvim",
+    },
+    config = function()
+      local dap = require("dap")
+      local dapui = require("dapui")
+
+      require("mason-nvim-dap").setup({
+        automatic_installation = true,
+        ensure_installed = { "python" },
+        handlers = {},
+      })
+
+      dap.listeners.after.event_initialized["vscode_dapui"] = function()
+        dapui.open()
+      end
+      dap.listeners.before.event_terminated["vscode_dapui"] = function()
+        dapui.close()
+      end
+      dap.listeners.before.event_exited["vscode_dapui"] = function()
+        dapui.close()
+      end
+
+      local vscode = require("dap.ext.vscode")
+      vscode.json_decode = function(value)
+        return vim.json.decode(require("plenary.json").json_strip_comments(value))
+      end
+
+      vim.fn.sign_define("DapBreakpoint", { text = "", texthl = "DiagnosticError" })
+      vim.fn.sign_define("DapBreakpointCondition", { text = "", texthl = "DiagnosticWarn" })
+      vim.fn.sign_define("DapStopped", { text = "", texthl = "DiagnosticInfo", linehl = "Visual" })
+    end,
+  },
+}
