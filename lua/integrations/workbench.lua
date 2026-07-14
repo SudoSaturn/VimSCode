@@ -28,53 +28,7 @@ end
 local function setup_snacks()
   require("snacks").setup({
     bigfile = { enabled = true },
-    dashboard = {
-      sections = {
-        { section = "header" },
-        { section = "keys", gap = 1, padding = 1 },
-        { text = "Native extensions powered by vim.pack", align = "center", padding = 1 },
-      },
-      preset = {
-        header = [[
-                         ▄▄▄▄▄▄▄▄▄
-                    ▄███████████████▄
-                  ▄██████▀     ▀██████▄
-                 █████▀    ▄▄    ▀█████
-                 ████    ▄████▄    ████
-                 ████▄  ████████  ▄████
-                  █████▄ ▀████▀ ▄█████
-                    ▀████▄▄  ▄▄████▀
-                       ▀████████▀
-                          CODE
-]],
-        keys = {
-          { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
-          { icon = " ", key = "p", desc = "Quick Open", action = ":lua Snacks.picker.files()" },
-          { icon = " ", key = "r", desc = "Open Recent", action = ":lua Snacks.picker.recent()" },
-          {
-            icon = " ",
-            key = "e",
-            desc = "Explorer",
-            action = ":lua require('vscode.sidebar').open_explorer()",
-          },
-          {
-            icon = " ",
-            key = "f",
-            desc = "Find in Files",
-            action = ":lua require('vscode.sidebar').open_search()",
-          },
-          {
-            icon = " ",
-            key = "s",
-            desc = "Restore Session",
-            action = function()
-              require("persistence").load()
-            end,
-          },
-          { icon = " ", key = "q", desc = "Quit", action = ":qa" },
-        },
-      },
-    },
+    dashboard = { enabled = false },
     explorer = { enabled = true },
     indent = { enabled = true, char = "│", scope = { enabled = true, char = "│" } },
     input = { enabled = true },

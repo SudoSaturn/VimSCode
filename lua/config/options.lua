@@ -24,6 +24,7 @@ opt.pumheight = 12
 opt.relativenumber = false
 opt.scrolloff = 3
 opt.shiftround = true
+opt.shortmess:append("I")
 opt.shiftwidth = 4
 opt.showmode = false
 opt.sidescrolloff = 5

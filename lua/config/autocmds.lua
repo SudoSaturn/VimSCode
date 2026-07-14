@@ -1,4 +1,4 @@
-local group = vim.api.nvim_create_augroup("vscode_experience", { clear = true })
+local group = vim.api.nvim_create_augroup("nvicode_experience", { clear = true })
 
 -- VS Code terminals are ready for input as soon as they open.
 vim.api.nvim_create_autocmd("TermOpen", {

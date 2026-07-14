@@ -2,7 +2,7 @@ local M = {}
 
 local rail_width = 4
 local panel_width = 38
-local namespace = vim.api.nvim_create_namespace("vscode_activity_bar")
+local namespace = vim.api.nvim_create_namespace("nvicode_activity_bar")
 local state = { active = "explorer", windows = {}, actions = {} }
 
 local views = {
@@ -137,10 +137,10 @@ function M.ensure()
     local buf = vim.api.nvim_get_current_buf()
     state.windows[key] = win
 
-    vim.api.nvim_buf_set_name(buf, "vscode://activity-bar/" .. key)
+    vim.api.nvim_buf_set_name(buf, "nvicode://activity-bar/" .. key)
     vim.bo[buf].bufhidden = "wipe"
     vim.bo[buf].buftype = "nofile"
-    vim.bo[buf].filetype = "vscode_activity"
+    vim.bo[buf].filetype = "nvicode_activity"
     vim.bo[buf].swapfile = false
     vim.bo[buf].undofile = false
 
@@ -250,13 +250,13 @@ function M.setup()
   vim.api.nvim_set_hl(0, "VSCodeActivitySelected", { fg = "#ffffff", bg = "#181818", bold = true })
   vim.api.nvim_set_hl(0, "VSCodeActivityAccent", { fg = "#007acc", bg = "#181818" })
 
-  local group = vim.api.nvim_create_augroup("vscode_activity_bar", { clear = true })
+  local group = vim.api.nvim_create_augroup("nvicode_activity_bar", { clear = true })
   vim.api.nvim_create_autocmd({ "WinResized", "ColorScheme" }, {
     group = group,
     callback = function()
       if vim.v.event and vim.v.event.windows then
         for _, win in ipairs(vim.v.event.windows) do
-          if valid_win(win) and vim.bo[vim.api.nvim_win_get_buf(win)].filetype == "vscode_activity" then
+          if valid_win(win) and vim.bo[vim.api.nvim_win_get_buf(win)].filetype == "nvicode_activity" then
             render(win)
           end
         end
