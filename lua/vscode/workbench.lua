@@ -29,9 +29,9 @@ function M.settings()
       end,
     },
     {
-      label = "Plugin Manager",
+      label = "Extension Store",
       action = function()
-        vim.cmd.Lazy()
+        M.extensions()
       end,
     },
     {
@@ -49,7 +49,7 @@ function M.settings()
     {
       label = "Edit Extensions",
       action = function()
-        edit_config("lua/plugins")
+        edit_config("lua/config/plugins.lua")
       end,
     },
     {

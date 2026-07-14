@@ -15,10 +15,11 @@ git clone https://github.com/SudoSaturn/nvim-vscode ~/.config/nvim
 nvim
 ```
 
-plugins install automatically the first time.
+plugins install automatically the first time through Neovim's native
+`vim.pack` API and are configured by this project's own integration modules.
 
-use `:Lazy` for plugins, `:Mason` for language tools, and `Ctrl+Shift+P` for the
-command palette.
+use `:Store` for the extension marketplace, `:packupdate` for native package
+updates, `:Mason` for language tools, and `Ctrl+Shift+P` for the command palette.
 
 ## workbench keys
 

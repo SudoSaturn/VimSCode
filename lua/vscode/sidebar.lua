@@ -13,7 +13,7 @@ local views = {
   { id = "extensions", icon = "󰏗", label = "Extensions" },
 }
 
-local picker_sources = { "explorer", "grep", "git_status", "lazy" }
+local picker_sources = { "explorer", "grep", "git_status" }
 
 local function valid_win(win)
   return win and vim.api.nvim_win_is_valid(win)
@@ -215,10 +215,9 @@ function M.open_debug()
 end
 
 function M.open_extensions()
-  close_pickers("lazy")
-  local picker = Snacks.picker.get({ source = "lazy", tab = false })[1]
-    or Snacks.picker.lazy({ auto_close = false, layout = panel_layout() })
-  return finish_open("extensions", picker, "input")
+  close_pickers()
+  M.set_active("extensions")
+  require("integrations.store").open()
 end
 
 function M.open_settings()
