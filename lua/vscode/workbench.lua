@@ -9,7 +9,7 @@ function M.themes()
 end
 
 function M.extensions()
-  Snacks.picker.lazy({ layout = { preset = "vscode" } })
+  require("vscode.sidebar").open_extensions()
 end
 
 function M.settings()

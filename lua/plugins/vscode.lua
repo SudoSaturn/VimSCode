@@ -30,8 +30,18 @@ return {
             { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
             { icon = " ", key = "p", desc = "Quick Open", action = ":lua Snacks.picker.files()" },
             { icon = " ", key = "r", desc = "Open Recent", action = ":lua Snacks.picker.recent()" },
-            { icon = " ", key = "e", desc = "Explorer", action = ":lua Snacks.explorer()" },
-            { icon = " ", key = "f", desc = "Find in Files", action = ":lua Snacks.picker.grep()" },
+            {
+              icon = " ",
+              key = "e",
+              desc = "Explorer",
+              action = ":lua require('vscode.sidebar').open_explorer()",
+            },
+            {
+              icon = " ",
+              key = "f",
+              desc = "Find in Files",
+              action = ":lua require('vscode.sidebar').open_search()",
+            },
             {
               icon = " ",
               key = "s",
@@ -65,7 +75,7 @@ return {
             auto_close = false,
             follow_file = true,
             hidden = true,
-            layout = { preset = "sidebar", layout = { position = "left", width = 34 } },
+            layout = { preset = "sidebar", layout = { position = "left", width = 38 } },
             win = {
               list = {
                 keys = {

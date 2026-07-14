@@ -27,14 +27,13 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 -- Keep the Explorer visible on the left at startup, matching the default workbench.
-vim.api.nvim_create_autocmd("User", {
+vim.api.nvim_create_autocmd("VimEnter", {
   group = group,
-  pattern = "VeryLazy",
   once = true,
   callback = function()
     if #vim.api.nvim_list_uis() > 0 then
       vim.schedule(function()
-        Snacks.explorer()
+        require("vscode.sidebar").open_explorer()
       end)
     end
   end,
