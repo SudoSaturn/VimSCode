@@ -59,6 +59,11 @@ local function begin_open(id)
   return true
 end
 
+local function close_extensions()
+  local ok, store = pcall(require, "integrations.store")
+  return ok and store.close()
+end
+
 local function current_picker()
   for _, source in ipairs(picker_sources) do
     local picker = Snacks.picker.get({ source = source, tab = false })[1]
@@ -209,6 +214,7 @@ function M.open_explorer()
   if not begin_open("explorer") then
     return
   end
+  close_extensions()
   close_pickers("explorer")
   local picker = existing_picker("explorer") or Snacks.explorer()
   return finish_open("explorer", picker, "list")
@@ -218,6 +224,7 @@ function M.open_search()
   if not begin_open("search") then
     return
   end
+  close_extensions()
   close_pickers("grep")
   local picker = existing_picker("grep") or Snacks.picker.grep({ auto_close = false, layout = panel_layout() })
   return finish_open("search", picker, "input")
@@ -227,6 +234,7 @@ function M.open_source_control()
   if not begin_open("source_control") then
     return
   end
+  close_extensions()
   close_pickers("git_status")
   local picker = existing_picker("git_status")
     or Snacks.picker.git_status({ auto_close = false, layout = panel_layout() })
@@ -246,6 +254,7 @@ function M.open_settings()
   if not begin_open("settings") then
     return
   end
+  close_extensions()
   M.set_active("settings")
   require("vscode.workbench").settings()
 end

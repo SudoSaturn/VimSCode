@@ -210,6 +210,9 @@ local function search_settings()
 end
 
 function M.settings()
+  pcall(function()
+    require("integrations.store").close()
+  end)
   if valid_win(settings.win) then
     vim.api.nvim_set_current_win(settings.win)
     return settings.win

@@ -328,4 +328,23 @@ function M.open()
   end
 end
 
+function M.is_open()
+  return current_instance ~= nil and not current_instance.state.is_closing
+end
+
+function M.close()
+  if not M.is_open() then
+    return false
+  end
+  local instance = current_instance
+  local ok, err = pcall(function()
+    instance:close()
+  end)
+  if not ok then
+    vim.notify("Unable to close Extensions: " .. tostring(err), vim.log.levels.ERROR, { title = "NVICode" })
+    return false
+  end
+  return true
+end
+
 return M
