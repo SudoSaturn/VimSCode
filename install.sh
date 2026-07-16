@@ -2,7 +2,7 @@
 set -euo pipefail
 
 NVIM_VERSION_REQUIRED="0.12.0"
-REPO_URL="https://github.com/SudoSaturn/nVimSCode"
+REPO_URL="https://github.com/SudoSaturn/VimSCode"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
 BACKUP_DIR="${CONFIG_DIR}.backup.$(date +%s)"
 
@@ -38,7 +38,7 @@ main() {
         mv "${CONFIG_DIR}" "${BACKUP_DIR}"
     fi
 
-    echo "Cloning NVICode configuration from ${REPO_URL}..."
+    echo "Cloning VimSCode configuration from ${REPO_URL}..."
     git clone --depth 1 "${REPO_URL}" "${CONFIG_DIR}"
 
     echo "Bootstrapping plugins via vim.pack..."

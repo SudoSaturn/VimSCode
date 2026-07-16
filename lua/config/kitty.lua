@@ -19,8 +19,8 @@ function M.setup()
       local mapping = vim.fn.maparg(key, "n", false, true)
       lines[#lines + 1] = string.format("%-14s %s", key, mapping.desc or "unmapped")
     end
-    vim.notify(table.concat(lines, "\n"), vim.log.levels.INFO, { title = "NVICode keybindings" })
-  end, { desc = "Inspect Kitty-specific NVICode keybindings" })
+    vim.notify(table.concat(lines, "\n"), vim.log.levels.INFO, { title = "VimSCode keybindings" })
+  end, { desc = "Inspect Kitty-specific VimSCode keybindings" })
 end
 
 return M

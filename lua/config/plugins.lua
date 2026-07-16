@@ -59,7 +59,7 @@ end
 
 function M.setup()
   if not vim.pack then
-    error("NVICode requires Neovim with vim.pack support")
+    error("VimSCode requires Neovim with vim.pack support")
   end
 
   -- vim-visual-multi reads these while its plugin scripts are sourced.

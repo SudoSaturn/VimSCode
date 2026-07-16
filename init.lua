@@ -1,4 +1,4 @@
--- NVICode: a standalone VS Code-like Neovim configuration. Plugins are fetched with
+-- VimSCode: a standalone VS Code-like Neovim configuration. Plugins are fetched with
 -- Neovim's native vim.pack API and configured by our integration modules.
 require("config.options")
 require("config.kitty").setup()

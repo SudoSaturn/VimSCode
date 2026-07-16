@@ -68,7 +68,7 @@ function M.set_filter(mode)
   local aliases = { ["not-installed"] = "available", uninstalled = "available" }
   mode = aliases[mode] or mode
   if mode ~= "all" and mode ~= "installed" and mode ~= "available" then
-    vim.notify("Unknown extension filter: " .. tostring(mode), vim.log.levels.WARN, { title = "NVICode Extensions" })
+    vim.notify("Unknown extension filter: " .. tostring(mode), vim.log.levels.WARN, { title = "vimscode Extensions" })
     return
   end
   instance._nvicode_filter = mode
@@ -106,16 +106,16 @@ function M.toggle_selected()
   local instance = current_instance
   local repo = instance and instance.state.current_repository
   if not repo then
-    vim.notify("Select an extension first", vim.log.levels.INFO, { title = "NVICode Extensions" })
+    vim.notify("Select an extension first", vim.log.levels.INFO, { title = "vimscode Extensions" })
     return
   end
 
   if is_installed(instance, repo) then
     if not is_managed(repo) then
       vim.notify(
-        repo.name .. " is bundled with NVICode and cannot be removed from the Extension Store",
+        repo.name .. " is bundled with vimscode and cannot be removed from the Extension Store",
         vim.log.levels.INFO,
-        { title = "NVICode Extensions" }
+        { title = "vimscode Extensions" }
       )
       return
     end
@@ -127,7 +127,7 @@ function M.toggle_selected()
     vim.fn.delete(extension_path(repo))
     instance.state.installed_items[repo.name] = nil
     refresh(instance)
-    vim.notify("Uninstalled " .. repo.name, vim.log.levels.INFO, { title = "NVICode Extensions" })
+    vim.notify("Uninstalled " .. repo.name, vim.log.levels.INFO, { title = "vimscode Extensions" })
     return
   end
 
@@ -147,12 +147,12 @@ function M.toggle_selected()
   instance.state.installed_items[repo.name] = true
   refresh(instance)
   if ok then
-    vim.notify("Installed " .. repo.name, vim.log.levels.INFO, { title = "NVICode Extensions" })
+    vim.notify("Installed " .. repo.name, vim.log.levels.INFO, { title = "vimscode Extensions" })
   else
     vim.notify(
       repo.name .. " was installed, but its setup needs attention:\n" .. tostring(err),
       vim.log.levels.WARN,
-      { title = "NVICode Extensions" }
+      { title = "vimscode Extensions" }
     )
   end
 end
@@ -188,7 +188,7 @@ local function fit(text, width)
 end
 
 -- Store owns catalogue data, filtering, installs, and README rendering.
--- NVICode supplies the workbench chrome without modifying the dependency.
+-- vimscode supplies the workbench chrome without modifying the dependency.
 local function apply_nvicode_chrome()
   local heading = require("store.ui.heading")
   if heading._nvicode_patched then
@@ -298,9 +298,9 @@ function M.setup()
   })
 
   -- Keep Store's documented command while routing every entry point through
-  -- NVICode's activity bar and split orchestration.
+  -- vimscode's activity bar and split orchestration.
   pcall(vim.api.nvim_del_user_command, "Store")
-  vim.api.nvim_create_user_command("Store", M.open, { desc = "Open NVICode Extensions" })
+  vim.api.nvim_create_user_command("Store", M.open, { desc = "Open vimscode Extensions" })
   vim.api.nvim_create_user_command("ExtensionToggle", M.toggle_selected, { desc = "Install or uninstall selected extension" })
   vim.api.nvim_create_user_command("ExtensionFilter", function(args)
     if args.args == "" then
@@ -313,7 +313,7 @@ function M.setup()
     complete = function()
       return { "all", "installed", "not-installed" }
     end,
-    desc = "Filter the NVICode Extension Store",
+    desc = "Filter the vimscode Extension Store",
   })
 end
 
@@ -341,7 +341,7 @@ function M.close()
     instance:close()
   end)
   if not ok then
-    vim.notify("Unable to close Extensions: " .. tostring(err), vim.log.levels.ERROR, { title = "NVICode" })
+    vim.notify("Unable to close Extensions: " .. tostring(err), vim.log.levels.ERROR, { title = "vimscode" })
     return false
   end
   return true

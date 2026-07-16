@@ -1,5 +1,5 @@
 local M = {}
-local settings_ns = vim.api.nvim_create_namespace("nvicode_settings")
+local settings_ns = vim.api.nvim_create_namespace("vimscode_settings")
 
 local settings = {
   buf = nil,
@@ -55,7 +55,7 @@ local function settings_entries()
     { section = "Commonly Used" },
     {
       label = "Color Theme",
-      description = "Choose the colors used throughout the NVICode workbench.",
+      description = "Choose the colors used throughout the vimscode workbench.",
       value = vim.g.colors_name or "vscode",
       close = true,
       action = M.themes,
@@ -83,7 +83,7 @@ local function settings_entries()
     { section = "Workbench" },
     {
       label = "Extensions",
-      description = "Search, inspect, and install NVICode extensions.",
+      description = "Search, inspect, and install vimscode extensions.",
       value = "Open",
       close = true,
       action = M.extensions,
@@ -109,7 +109,7 @@ local function settings_entries()
     { section = "Configuration" },
     {
       label = "Open User Settings",
-      description = "Edit NVICode editor options.",
+      description = "Edit vimscode editor options.",
       value = "Lua",
       close = true,
       action = function()
@@ -118,7 +118,7 @@ local function settings_entries()
     },
     {
       label = "Open Keyboard Shortcuts",
-      description = "Edit NVICode keybindings.",
+      description = "Edit vimscode keybindings.",
       value = "Lua",
       close = true,
       action = function()
@@ -177,11 +177,11 @@ local function render_settings()
   vim.api.nvim_buf_clear_namespace(settings.buf, settings_ns, 0, -1)
 
   for line, _ in pairs(settings.actions) do
-    vim.api.nvim_buf_add_highlight(settings.buf, settings_ns, "NVICodeSetting", line - 1, 0, -1)
+    vim.api.nvim_buf_add_highlight(settings.buf, settings_ns, "vimscodeSetting", line - 1, 0, -1)
   end
   for line, text in ipairs(lines) do
     if text:match("^  [A-Z].*$") and not settings.actions[line] then
-      vim.api.nvim_buf_add_highlight(settings.buf, settings_ns, "NVICodeSettingsHeading", line - 1, 0, -1)
+      vim.api.nvim_buf_add_highlight(settings.buf, settings_ns, "vimscodeSettingsHeading", line - 1, 0, -1)
     end
   end
 end
@@ -258,7 +258,7 @@ function M.settings()
   vim.wo[settings.win].relativenumber = false
   vim.wo[settings.win].signcolumn = "no"
   vim.wo[settings.win].wrap = false
-  vim.wo[settings.win].winhighlight = "Normal:NVICodeSettings,FloatBorder:NVICodeSettingsBorder,CursorLine:NVICodeSettingsCursor"
+  vim.wo[settings.win].winhighlight = "Normal:vimscodeSettings,FloatBorder:vimscodeSettingsBorder,CursorLine:vimscodeSettingsCursor"
   render_settings()
 
   local first
@@ -272,15 +272,15 @@ function M.settings()
 end
 
 function M.setup()
-  vim.api.nvim_set_hl(0, "NVICodeSettings", { fg = "#cccccc", bg = "#1e1e1e" })
-  vim.api.nvim_set_hl(0, "NVICodeSettingsBorder", { fg = "#454545", bg = "#1e1e1e" })
-  vim.api.nvim_set_hl(0, "NVICodeSettingsCursor", { bg = "#2a2d2e" })
-  vim.api.nvim_set_hl(0, "NVICodeSettingsHeading", { fg = "#ffffff", bold = true })
-  vim.api.nvim_set_hl(0, "NVICodeSetting", { fg = "#9cdcfe" })
+  vim.api.nvim_set_hl(0, "vimscodeSettings", { fg = "#cccccc", bg = "#1e1e1e" })
+  vim.api.nvim_set_hl(0, "vimscodeSettingsBorder", { fg = "#454545", bg = "#1e1e1e" })
+  vim.api.nvim_set_hl(0, "vimscodeSettingsCursor", { bg = "#2a2d2e" })
+  vim.api.nvim_set_hl(0, "vimscodeSettingsHeading", { fg = "#ffffff", bold = true })
+  vim.api.nvim_set_hl(0, "vimscodeSetting", { fg = "#9cdcfe" })
 
   vim.api.nvim_create_user_command("Themes", M.themes, { desc = "Browse installed color themes" })
   vim.api.nvim_create_user_command("Extensions", M.extensions, { desc = "Browse configured extensions" })
-  vim.api.nvim_create_user_command("Settings", M.settings, { desc = "Open NVICode settings" })
+  vim.api.nvim_create_user_command("Settings", M.settings, { desc = "Open vimscode settings" })
 end
 
 return M
