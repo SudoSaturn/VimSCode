@@ -34,3 +34,4 @@ I am doing this project on a 13 year old thinkpad while moving my studio
 so i will be able to test more throughly once i can use my main machine.
 
 Please let me know what is broken or messed up and ill make time to fix it up :)
+
