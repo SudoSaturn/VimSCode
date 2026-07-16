@@ -92,9 +92,17 @@
       "rev": "31e3c38ce9b29781e4422fc0322eb0a21f4e8668",
       "src": "https://github.com/folke/todo-comments.nvim"
     },
+    "token": {
+      "rev": "97984f9bf273042e18b4d74764fd586593d9fa18",
+      "src": "https://github.com/ThorstenRhau/token"
+    },
     "tokyonight.nvim": {
       "rev": "cdc07ac78467a233fd62c493de29a17e0cf2b2b6",
       "src": "https://github.com/folke/tokyonight.nvim"
+    },
+    "toml.nvim": {
+      "rev": "21515edda8c16128ec23cdfe2a597c6fbce6cc81",
+      "src": "https://github.com/wsdjeg/toml.nvim"
     },
     "trouble.nvim": {
       "rev": "bd67efe408d4816e25e8491cc5ad4088e708a69a",

@@ -29,6 +29,8 @@ updates, `:Mason` for language tools, and `Ctrl+Shift+P` for the command palette
 - `Ctrl+,` opens settings and `Ctrl+K Ctrl+S` searches keyboard shortcuts
 - `Ctrl+backtick` toggles the integrated terminal
 
-Kitty is detected automatically. Neovim negotiates Kitty's extended keyboard
-protocol so Ctrl+Shift and shifted navigation bindings remain distinct. Run
-`:KittyKeys` to inspect the important mappings in the current terminal.
+Any terminal using the Kitty keyboard logic should automatically detected (eg: Ghostty, Alacritty).
+I am doing this project on a 13 year old thinkpad while moving my studio 
+so i will be able to test more throughly once i can use my main machine.
+
+Please let me know what is broken or messed up and ill make time to fix it up :)
