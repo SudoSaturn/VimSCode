@@ -1,4 +1,4 @@
-# nvim-vscode
+# nVimSCoDE
 
 my neovim config, set up to feel a lot like VS Code.
 
@@ -11,7 +11,7 @@ and familiar shortcuts.
 back up your old neovim config, then run:
 
 ```sh
-git clone https://github.com/SudoSaturn/nvim-vscode ~/.config/nvim
+git clone https://github.com/SudoSaturn/nVimSCoDE ~/.config/nvim
 nvim
 ```
 
