@@ -2,7 +2,7 @@
 set -euo pipefail
 
 NVIM_VERSION_REQUIRED="0.12.0"
-REPO_URL="https://github.com/SudoSaturn/nvim-vscode"
+REPO_URL="https://github.com/SudoSaturn/nVimSCode"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
 BACKUP_DIR="${CONFIG_DIR}.backup.$(date +%s)"
 
