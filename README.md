@@ -1,7 +1,5 @@
 # VimSCode
 
-my neovim config, although i am comfortable using vanilla vim controls, it is time to accept who I reall am.
-
 I made this so it has a VSCode feel to it, activity bar and side views, tabs, search,
 terminal, git tools, autocomplete, debugging, settings/theme/extension search,
 and familiar shortcuts.
