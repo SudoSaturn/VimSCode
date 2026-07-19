@@ -1,8 +1,8 @@
 # VimSCode
 
-my neovim config, set up to feel a lot like VS Code.
+my neovim config, although i am comfortable using vanilla vim controls, it is time to accept who I reall am.
 
-it has the VS Code dark look, activity bar and side views, tabs, search,
+I made this so it has a VSCode feel to it, activity bar and side views, tabs, search,
 terminal, git tools, autocomplete, debugging, settings/theme/extension search,
 and familiar shortcuts.
 
