@@ -16,22 +16,26 @@ local treesitter_filetypes = {
 }
 
 local function setup_treesitter()
-  require("nvim-treesitter").install({
-    "bash",
-    "html",
-    "javascript",
-    "json",
-    "json5",
-    "lua",
-    "markdown",
-    "markdown_inline",
-    "python",
-    "regex",
-    "tsx",
-    "typescript",
-    "vim",
-    "vimdoc",
-    "yaml",
+  require("nvim-treesitter.configs").setup({
+    ensure_installed = {
+      "bash",
+      "html",
+      "javascript",
+      "json",
+      "json5",
+      "lua",
+      "markdown",
+      "markdown_inline",
+      "python",
+      "regex",
+      "tsx",
+      "typescript",
+      "vim",
+      "vimdoc",
+      "yaml",
+    },
+    sync_install = false,
+    auto_install = false,
   })
 
   vim.api.nvim_create_autocmd("FileType", {

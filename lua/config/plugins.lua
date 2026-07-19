@@ -19,7 +19,7 @@ local plugins = {
   github("folke/tokyonight.nvim"),
   { src = github("catppuccin/nvim"), name = "catppuccin" },
 
-  github("nvim-treesitter/nvim-treesitter"),
+  { src = github("nvim-treesitter/nvim-treesitter"), version = "master" },
   github("saghen/blink.cmp"),
   github("mason-org/mason.nvim"),
   github("mason-org/mason-lspconfig.nvim"),
