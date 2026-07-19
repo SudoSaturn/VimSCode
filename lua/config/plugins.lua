@@ -53,6 +53,70 @@ local function load_store_extensions()
   end
 end
 
+local function run_with_progress(plugins_list)
+  local width = 60
+  local win, buf
+  local orig_echo = vim.api.nvim_echo
+  
+  local function init_win()
+    if win then return end
+    buf = vim.api.nvim_create_buf(false, true)
+    local ok, w = pcall(vim.api.nvim_open_win, buf, true, {
+      relative = "editor",
+      width = width,
+      height = 5,
+      col = math.floor((vim.o.columns - width) / 2),
+      row = math.floor((vim.o.lines - 5) / 2),
+      style = "minimal",
+      border = "rounded",
+      title = " Downloading Plugins ",
+      title_pos = "center",
+      zindex = 250,
+    })
+    if ok then
+      win = w
+    end
+  end
+
+  local function update_bar(pct, name)
+    init_win()
+    local filled = math.floor((pct / 100) * (width - 4))
+    local bar = "[" .. string.rep("=", filled) .. string.rep(" ", (width - 4) - filled) .. "]"
+    local text = name and name ~= "" and ("Installing: " .. name) or (pct == 100 and "Done!" or "Starting...")
+    if vim.api.nvim_buf_is_valid(buf) then
+      vim.api.nvim_buf_set_lines(buf, 0, -1, false, {
+        "",
+        "  " .. bar,
+        "",
+        "  " .. text
+      })
+      vim.cmd("redraw")
+    end
+  end
+
+  vim.api.nvim_echo = function(chunks, history, opts)
+    if opts and opts.kind == "progress" and opts.source == "vim.pack" then
+      local pct = opts.percent or 0
+      local msg = chunks[1] and chunks[1][1] or ""
+      local name = msg:match("%(%d+/%d+%)%s*%-?%s*(.*)")
+      update_bar(pct, name or "")
+    else
+      orig_echo(chunks, history, opts)
+    end
+  end
+  
+  local ok, err = pcall(vim.pack.add, plugins_list, { confirm = false, load = true })
+  
+  vim.api.nvim_echo = orig_echo
+  if win and vim.api.nvim_win_is_valid(win) then
+    vim.api.nvim_win_close(win, true)
+  end
+  
+  if not ok then
+    error("Failed to install plugins: " .. tostring(err))
+  end
+end
+
 function M.setup()
   if not vim.pack then
     error("VimSCode requires Neovim with vim.pack support")
@@ -67,7 +131,7 @@ function M.setup()
   }
   vim.g.VM_theme = "iceblue"
 
-  vim.pack.add(plugins, { confirm = false, load = true })
+  run_with_progress(plugins)
   load_store_extensions()
 end
 
