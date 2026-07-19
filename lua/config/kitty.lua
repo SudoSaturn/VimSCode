@@ -5,9 +5,6 @@ function M.setup()
     return
   end
 
-  -- Neovim negotiates Kitty's progressive keyboard protocol itself. A short
-  -- terminal timeout keeps Alt chords responsive without collapsing distinct
-  -- Ctrl+Shift, Shift+Enter, Backspace, and Ctrl+/ key events.
   vim.opt.ttimeout = true
   vim.opt.ttimeoutlen = 10
   vim.g.nvicode_kitty_keyboard = true

@@ -187,8 +187,6 @@ local function fit(text, width)
   return vim.fn.strcharpart(text, 0, math.max(width - 1, 0)) .. "…"
 end
 
--- Store owns catalogue data, filtering, installs, and README rendering.
--- vimscode supplies the workbench chrome without modifying the dependency.
 local function apply_nvicode_chrome()
   local heading = require("store.ui.heading")
   if heading._nvicode_patched then
@@ -297,8 +295,6 @@ function M.setup()
     telemetry = false,
   })
 
-  -- Keep Store's documented command while routing every entry point through
-  -- vimscode's activity bar and split orchestration.
   pcall(vim.api.nvim_del_user_command, "Store")
   vim.api.nvim_create_user_command("Store", M.open, { desc = "Open vimscode Extensions" })
   vim.api.nvim_create_user_command("ExtensionToggle", M.toggle_selected, { desc = "Install or uninstall selected extension" })

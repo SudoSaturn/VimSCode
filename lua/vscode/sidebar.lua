@@ -176,8 +176,6 @@ function M.ensure()
     vim.api.nvim_set_current_win(win)
   end
 
-  -- Snacks sidebars are splits too; always lift the rail out of their layout
-  -- tree so it remains the absolute leftmost VS Code activity column.
   vim.api.nvim_set_current_win(win)
   vim.cmd.wincmd("H")
   vim.api.nvim_win_set_width(win, rail_width)
@@ -204,8 +202,6 @@ local function finish_open(id, picker, focus)
       picker:focus(focus)
     end
   end)
-  -- Snacks finalizes its sidebar split asynchronously. Re-assert the outer
-  -- workbench order once that layout pass has completed.
   vim.defer_fn(M.ensure, 30)
   return picker
 end

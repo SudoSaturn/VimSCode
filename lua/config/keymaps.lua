@@ -1,5 +1,3 @@
--- VS Code muscle memory for the standalone configuration. Space-leader
--- mappings remain available when a terminal cannot encode Ctrl+Shift.
 local map = vim.keymap.set
 local silent = { silent = true }
 local sidebar = function()
@@ -29,7 +27,6 @@ local function save_as()
   end)
 end
 
--- File and editor management
 map({ "n", "i", "x" }, "<C-s>", save, { desc = "File: Save", silent = true })
 map({ "n", "i", "x" }, "<C-S-s>", save_as, { desc = "File: Save As", silent = true })
 map("n", "<C-n>", "<cmd>enew<cr>", { desc = "File: New", silent = true })
@@ -57,7 +54,6 @@ for i = 1, 9 do
   })
 end
 
--- Workbench and side/panel surfaces
 map("n", "<C-p>", function()
   Snacks.picker.files()
 end, { desc = "Quick Open", silent = true })
@@ -92,7 +88,6 @@ end, { desc = "View: Toggle Panel", silent = true })
 map("t", "<C-w>", [[<C-\><C-n><cmd>close<cr>]], { desc = "Terminal: Close", silent = true })
 map("t", "<Esc><Esc>", [[<C-\><C-n>]], { desc = "Terminal: Focus Editor", silent = true })
 
--- Search and navigation
 map({ "n", "x" }, "<C-f>", "/", { desc = "Find", silent = false })
 map("i", "<C-f>", "<Esc>/", { desc = "Find", silent = false })
 map("n", "<C-h>", function()
@@ -119,7 +114,6 @@ map("n", "<S-F8>", function()
   vim.diagnostic.jump({ count = -1, float = true })
 end, { desc = "Previous Problem", silent = true })
 
--- Familiar text editing
 map("n", "<C-a>", "ggVG", { desc = "Select All", silent = true })
 map("i", "<C-a>", "<Esc>ggVG", { desc = "Select All", silent = true })
 map("n", "<C-c>", '"+yy', { desc = "Copy Line", silent = true })
@@ -158,7 +152,6 @@ map("n", "<C-S-[>", "zc", { desc = "Fold", silent = true })
 map("n", "<C-S-]>", "zo", { desc = "Unfold", silent = true })
 map({ "n", "i" }, "<C-S-Space>", vim.lsp.buf.signature_help, { desc = "Trigger Parameter Hints", silent = true })
 
--- Kitty's keyboard protocol makes these shifted navigation keys unambiguous.
 map("n", "<S-Left>", "v<Left>", { desc = "Selection: Left", silent = true })
 map("n", "<S-Right>", "v<Right>", { desc = "Selection: Right", silent = true })
 map("n", "<S-Up>", "v<Up>", { desc = "Selection: Up", silent = true })
@@ -166,13 +159,11 @@ map("n", "<S-Down>", "v<Down>", { desc = "Selection: Down", silent = true })
 map("n", "<C-S-Left>", "vb", { desc = "Selection: Word Left", silent = true })
 map("n", "<C-S-Right>", "ve", { desc = "Selection: Word Right", silent = true })
 
--- Ctrl+/ is encoded as Ctrl+_ by most terminals.
 map("n", "<C-_>", "gcc", { desc = "Toggle Line Comment", remap = true, silent = true })
 map("x", "<C-_>", "gc", { desc = "Toggle Comment", remap = true, silent = true })
 map("n", "<C-/>", "gcc", { desc = "Toggle Line Comment", remap = true, silent = true })
 map("x", "<C-/>", "gc", { desc = "Toggle Comment", remap = true, silent = true })
 
--- VS Code-style chords
 map("n", "<C-k><C-s>", function()
   Snacks.picker.keymaps()
 end, { desc = "Preferences: Keyboard Shortcuts", silent = true })
@@ -195,7 +186,6 @@ map("n", "<C-,>", function()
   require("vscode.workbench").settings()
 end, { desc = "Preferences: Open Settings", silent = true })
 
--- Discoverable fallbacks and plugin-spec compatibility mappings.
 map("n", "<leader><space>", function()
   Snacks.picker.files()
 end, { desc = "Quick Open", silent = true })

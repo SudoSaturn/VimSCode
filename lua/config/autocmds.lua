@@ -1,6 +1,5 @@
 local group = vim.api.nvim_create_augroup("nvicode_experience", { clear = true })
 
--- VS Code terminals are ready for input as soon as they open.
 vim.api.nvim_create_autocmd("TermOpen", {
   group = group,
   callback = function()
@@ -26,7 +25,6 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- Keep the Explorer visible on the left at startup, matching the default workbench.
 vim.api.nvim_create_autocmd("VimEnter", {
   group = group,
   once = true,

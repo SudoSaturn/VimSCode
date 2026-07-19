@@ -5,13 +5,11 @@ local function github(repo)
 end
 
 local plugins = {
-  -- Shared libraries must be available before their consumers are configured.
   github("nvim-lua/plenary.nvim"),
   github("nvim-tree/nvim-web-devicons"),
   github("saghen/blink.lib"),
   github("rafamadriz/friendly-snippets"),
 
-  -- VS Code workbench and editor surfaces.
   github("Mofiqul/vscode.nvim"),
   github("folke/snacks.nvim"),
   github("akinsho/bufferline.nvim"),
@@ -21,7 +19,6 @@ local plugins = {
   github("folke/tokyonight.nvim"),
   { src = github("catppuccin/nvim"), name = "catppuccin" },
 
-  -- Language intelligence and editing.
   github("nvim-treesitter/nvim-treesitter"),
   github("saghen/blink.cmp"),
   github("mason-org/mason.nvim"),
@@ -38,7 +35,6 @@ local plugins = {
   github("folke/todo-comments.nvim"),
   github("folke/persistence.nvim"),
 
-  -- Native extension marketplace and README rendering.
   github("OXY2DEV/markview.nvim"),
   github("alex-popov-tech/store.nvim"),
 }
@@ -62,7 +58,6 @@ function M.setup()
     error("VimSCode requires Neovim with vim.pack support")
   end
 
-  -- vim-visual-multi reads these while its plugin scripts are sourced.
   vim.g.VM_maps = {
     ["Find Under"] = "<C-d>",
     ["Find Subword Under"] = "<C-d>",
@@ -72,7 +67,6 @@ function M.setup()
   }
   vim.g.VM_theme = "iceblue"
 
-  -- Native Neovim package management with immediate access to core modules.
   vim.pack.add(plugins, { confirm = false, load = true })
   load_store_extensions()
 end

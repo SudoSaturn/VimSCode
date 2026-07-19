@@ -1,5 +1,3 @@
--- VS Code-like editing defaults. File-specific indentation can still be changed by
--- an EditorConfig file or an attached language server.
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
