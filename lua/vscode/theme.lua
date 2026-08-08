@@ -91,6 +91,11 @@ function M.apply()
   vim.api.nvim_set_hl(0, "VSCodeActivitySelected", { fg = palette.foreground, bg = palette.background, bold = true })
   vim.api.nvim_set_hl(0, "VSCodeActivityAccent", { fg = palette.accent, bg = palette.background })
   vim.api.nvim_set_hl(0, "VSCodePanelToggle", { fg = palette.muted, bg = palette.background })
+  vim.api.nvim_set_hl(0, "VSCodeSourceControlButton", {
+    fg = palette.background,
+    bg = palette.accent,
+    bold = true,
+  })
 
   -- Explorer folder labels should use the same foreground as the active editor theme.
   vim.api.nvim_set_hl(0, "SnacksPickerDirectory", { fg = palette.foreground })

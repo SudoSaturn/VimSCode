@@ -60,6 +60,21 @@ local function git_root()
   end
 end
 
+local function initialize_repository(picker)
+  local workspace = vim.fn.getcwd()
+  local result = vim.system({ "git", "-C", workspace, "init" }, { text = true }):wait(2000)
+  if result.code ~= 0 then
+    local message = result.stderr and result.stderr ~= "" and result.stderr or "Unable to initialize repository"
+    vim.notify(message, vim.log.levels.ERROR, {
+      title = "Source Control",
+    })
+    return
+  end
+
+  picker:close()
+  vim.defer_fn(M.open_source_control, 220)
+end
+
 local function empty_source_control_picker()
   return Snacks.picker({
     source = "git_status",
@@ -68,14 +83,21 @@ local function empty_source_control_picker()
     layout = panel_layout(),
     finder = function()
       return {
-        { text = "No repository opened", hl = "Title" },
-        { text = "Open a folder containing a Git repository to view changes.", hl = "Comment" },
+        { text = "No repostry found", hl = "Title" },
+        { text = "Initialize Repostry", button = true },
       }
     end,
     format = function(item)
+      if item.button then
+        return { { "  " .. item.text .. "  ", "VSCodeSourceControlButton" } }
+      end
       return { { item.text, item.hl } }
     end,
-    confirm = function() end,
+    confirm = function(picker, item)
+      if item.button then
+        initialize_repository(picker)
+      end
+    end,
   })
 end
 
