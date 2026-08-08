@@ -89,7 +89,19 @@ local function empty_source_control_picker()
     end,
     format = function(item)
       if item.button then
-        return { { "  " .. item.text .. "  ", "VSCodeSourceControlButton" } }
+        return {
+          {
+            "",
+            resolve = function(width)
+              local label = "   " .. item.text .. "   "
+              local padding = math.max(math.floor((width - vim.fn.strdisplaywidth(label)) / 2), 0)
+              return {
+                { string.rep(" ", padding) },
+                { label, "VSCodeSourceControlButton" },
+              }
+            end,
+          },
+        }
       end
       return { { item.text, item.hl } }
     end,
