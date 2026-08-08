@@ -18,6 +18,21 @@ local function valid_win(win)
   return win and vim.api.nvim_win_is_valid(win)
 end
 
+local function editor_win(win)
+  local config = vim.api.nvim_win_get_config(win)
+  return config.relative == "" and vim.bo[vim.api.nvim_win_get_buf(win)].buftype == ""
+end
+
+local function panel_toggle_winbar()
+  return "%=%#VSCodePanelToggle#%@v:lua.VimSCodeTogglePrimarySidebar@ 󰍜 %T"
+end
+
+local function apply_panel_toggle(win)
+  if valid_win(win) and editor_win(win) then
+    vim.wo[win].winbar = panel_toggle_winbar()
+  end
+end
+
 local function tab_key()
   return tostring(vim.api.nvim_get_current_tabpage())
 end
@@ -314,10 +329,10 @@ function M.focus_activity_bar()
 end
 
 function M.setup()
-  vim.api.nvim_set_hl(0, "VSCodeActivityBar", { fg = "#858585", bg = "#181818" })
-  vim.api.nvim_set_hl(0, "VSCodeActivityHover", { fg = "#ffffff", bg = "#2a2d2e" })
-  vim.api.nvim_set_hl(0, "VSCodeActivitySelected", { fg = "#ffffff", bg = "#181818", bold = true })
-  vim.api.nvim_set_hl(0, "VSCodeActivityAccent", { fg = "#007acc", bg = "#181818" })
+  _G.VimSCodeTogglePrimarySidebar = function()
+    M.toggle_panel()
+  end
+  apply_panel_toggle(vim.api.nvim_get_current_win())
 
   local group = vim.api.nvim_create_augroup("nvicode_activity_bar", { clear = true })
   vim.api.nvim_create_autocmd({ "WinResized", "ColorScheme" }, {
@@ -329,12 +344,15 @@ function M.setup()
             render(win)
           end
         end
-      else
-        vim.api.nvim_set_hl(0, "VSCodeActivityBar", { fg = "#858585", bg = "#181818" })
-        vim.api.nvim_set_hl(0, "VSCodeActivityHover", { fg = "#ffffff", bg = "#2a2d2e" })
-        vim.api.nvim_set_hl(0, "VSCodeActivitySelected", { fg = "#ffffff", bg = "#181818", bold = true })
-        vim.api.nvim_set_hl(0, "VSCodeActivityAccent", { fg = "#007acc", bg = "#181818" })
       end
+    end,
+  })
+  vim.api.nvim_create_autocmd({ "BufWinEnter", "WinEnter", "WinNew" }, {
+    group = group,
+    callback = function()
+      vim.schedule(function()
+        apply_panel_toggle(vim.api.nvim_get_current_win())
+      end)
     end,
   })
 

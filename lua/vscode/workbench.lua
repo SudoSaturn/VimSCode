@@ -42,6 +42,10 @@ function M.themes()
   Snacks.picker.colorschemes({ layout = { preset = "vscode" } })
 end
 
+function M.terminal_theme()
+  require("vscode.theme").use_terminal()
+end
+
 function M.extensions()
   require("vscode.sidebar").open_extensions()
 end
@@ -56,9 +60,15 @@ local function settings_entries()
     {
       label = "Color Theme",
       description = "Choose the colors used throughout the vimscode workbench.",
-      value = vim.g.colors_name or "vscode",
+      value = require("vscode.theme").name(),
       close = true,
       action = M.themes,
+    },
+    {
+      label = "Terminal Colors",
+      description = "Restore the terminal color palette used by default.",
+      value = require("vscode.theme").name() == "Terminal" and "Active" or "Use",
+      action = M.terminal_theme,
     },
     {
       label = "Editor: Word Wrap",
@@ -272,13 +282,8 @@ function M.settings()
 end
 
 function M.setup()
-  vim.api.nvim_set_hl(0, "vimscodeSettings", { fg = "#cccccc", bg = "#1e1e1e" })
-  vim.api.nvim_set_hl(0, "vimscodeSettingsBorder", { fg = "#454545", bg = "#1e1e1e" })
-  vim.api.nvim_set_hl(0, "vimscodeSettingsCursor", { bg = "#2a2d2e" })
-  vim.api.nvim_set_hl(0, "vimscodeSettingsHeading", { fg = "#ffffff", bold = true })
-  vim.api.nvim_set_hl(0, "vimscodeSetting", { fg = "#9cdcfe" })
-
   vim.api.nvim_create_user_command("Themes", M.themes, { desc = "Browse installed color themes" })
+  vim.api.nvim_create_user_command("ThemeTerminal", M.terminal_theme, { desc = "Use the terminal color palette" })
   vim.api.nvim_create_user_command("Extensions", M.extensions, { desc = "Browse configured extensions" })
   vim.api.nvim_create_user_command("Settings", M.settings, { desc = "Open vimscode settings" })
 end

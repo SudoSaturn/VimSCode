@@ -1,28 +1,9 @@
 local M = {}
 
-local blue = "#007acc"
-local dark = "#1e1e1e"
-local panel = "#252526"
-local tab = "#2d2d2d"
-local text = "#cccccc"
-
 local function setup_colorscheme()
-  require("vscode").setup({
-    style = "dark",
-    transparent = false,
-    italic_comments = true,
-    underline_links = true,
-    disable_nvimtree_bg = true,
-    terminal_colors = true,
-    color_overrides = {
-      vscBack = dark,
-      vscTabCurrent = dark,
-      vscTabOther = tab,
-      vscLeftDark = "#181818",
-      vscPopupBack = panel,
-    },
-  })
-  vim.cmd.colorscheme("vscode")
+  -- Neovim's default colorscheme delegates to the terminal palette.
+  vim.cmd("colorscheme default")
+  require("vscode.theme").setup()
 end
 
 local function setup_snacks()
@@ -92,38 +73,7 @@ local function setup_bufferline()
       show_close_icon = false,
       truncate_names = false,
     },
-    highlights = {
-      fill = { bg = "#181818" },
-      background = { fg = "#969696", bg = tab },
-      buffer_selected = { fg = "#ffffff", bg = dark, bold = false, italic = false },
-      close_button = { fg = "#969696", bg = tab },
-      close_button_selected = { fg = "#ffffff", bg = dark },
-      diagnostic = { bg = tab },
-      diagnostic_selected = { bg = dark, italic = false },
-      modified = { fg = "#e2c08d", bg = tab },
-      modified_selected = { fg = "#e2c08d", bg = dark },
-      separator = { fg = tab, bg = tab },
-      separator_selected = { fg = dark, bg = dark },
-    },
   })
-end
-
-local function mode_theme()
-  local function section()
-    return { fg = "#ffffff", bg = blue }
-  end
-  return {
-    normal = { a = section(), b = section(), c = section() },
-    insert = { a = section(), b = section(), c = section() },
-    visual = { a = section(), b = section(), c = section() },
-    replace = { a = section(), b = section(), c = section() },
-    command = { a = section(), b = section(), c = section() },
-    inactive = {
-      a = { fg = text, bg = panel },
-      b = { fg = text, bg = panel },
-      c = { fg = text, bg = panel },
-    },
-  }
 end
 
 local function setup_lualine()
@@ -132,7 +82,7 @@ local function setup_lualine()
       component_separators = "",
       globalstatus = true,
       section_separators = "",
-      theme = mode_theme(),
+      theme = "auto",
     },
     sections = {
       lualine_a = {
