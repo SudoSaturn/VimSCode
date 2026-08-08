@@ -1,5 +1,6 @@
 local M = {}
 local current_instance
+local chrome_namespace = vim.api.nvim_create_namespace("nvicode_extensions_chrome")
 
 local function normalize_disabled_telemetry()
   local telemetry = require("store.telemetry")
@@ -196,6 +197,30 @@ function M.toggle_selected()
   end
 end
 
+function M.action_label()
+  local repo = current_instance and current_instance.state.current_repository
+  if is_installed(current_instance, repo) then
+    return is_managed(repo) and "Uninstall" or "Bundled"
+  end
+  return "Install"
+end
+
+function M.focus_results()
+  local instance = current_instance
+  if instance and instance.list then
+    instance.list:focus()
+  end
+end
+
+function M.set_query(query)
+  local instance = current_instance
+  if not instance or instance.state.filter_query == query then
+    return
+  end
+  instance.state.filter_query = query
+  refresh(instance)
+end
+
 local function map_controls(instance)
   local buffers = {
     instance.list.state.buf.id,
@@ -250,26 +275,22 @@ local function apply_nvicode_chrome()
         end
 
         local width = math.max(self.config.width or vim.o.columns, 20)
-        local query = self.state.filter_query ~= "" and self.state.filter_query or "Press F to search extensions"
-        local results = self.state.state == "loading" and "Loading Marketplace…"
-          or string.format("%d results  ·  %d installed", self.state.filtered_count or 0, self.state.installed_count or 0)
-        local sort = (self.state.sort_type or "recently_updated"):gsub("_", " ")
-        local filter = current_instance and current_instance._nvicode_filter or "all"
-        local repo = current_instance and current_instance.state.current_repository
-        local action = is_installed(current_instance, repo) and (is_managed(repo) and "Uninstall" or "Bundled") or "Install"
-        local lines = {
-          fit("  EXTENSIONS", width),
-          fit("    " .. query, width),
-          fit("  " .. results .. "  ·  Sort: " .. sort, width),
-          fit("  [ i ] " .. action .. "    Filter: [ 0 ] All  [ 1 ] Installed  [ 2 ] Not Installed  [ g ] More", width),
-          fit("  MARKETPLACE                                   EXTENSION DETAILS", width),
-        }
+        local query = self.state.filter_query ~= "" and self.state.filter_query or "Search Extensions in Marketplace"
+        local lines = { fit("  > " .. query, width) }
 
         local buf = self.state.buf.id
         vim.bo[buf].modifiable = true
         vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
         vim.bo[buf].modifiable = false
         vim.bo[buf].filetype = "nvicode_extensions_header"
+        vim.api.nvim_buf_clear_namespace(buf, chrome_namespace, 0, -1)
+        vim.api.nvim_buf_set_extmark(buf, chrome_namespace, 0, 0, {
+          end_row = 0,
+          end_col = #lines[1],
+          hl_group = "SnacksPickerInput",
+          hl_eol = true,
+        })
+        vim.api.nvim_buf_add_highlight(buf, chrome_namespace, "SnacksPickerPrompt", 0, 0, 3)
       end)
     end
     return instance, nil
@@ -287,10 +308,32 @@ local function apply_nvicode_chrome()
     instance._nvicode_filter = "all"
     map_controls(instance)
 
+    local render_list = instance.list._render_ready
+    instance.list._render_ready = function(self, state)
+      render_list(self, state)
+      vim.schedule(function()
+        local buf = self.state.buf.id
+        if not buf or not vim.api.nvim_buf_is_valid(buf) then
+          return
+        end
+        vim.api.nvim_buf_clear_namespace(buf, chrome_namespace, 0, -1)
+        local width = self.state.win.id and vim.api.nvim_win_is_valid(self.state.win.id)
+            and vim.api.nvim_win_get_width(self.state.win.id)
+          or 38
+        local rule = "  " .. string.rep("─", math.max(width - 4, 1))
+        for line = 0, math.max(vim.api.nvim_buf_line_count(buf) - 2, -1) do
+          vim.api.nvim_buf_set_extmark(buf, chrome_namespace, line, 0, {
+            virt_lines = { { { rule, "VSCodeExtensionsSeparator" } } },
+          })
+        end
+      end)
+    end
+
     local on_repo = instance.list.config.on_repo
     instance.list.config.on_repo = function(repo)
       on_repo(repo)
       instance.heading:render({})
+      instance.layout_provider:update_winbar(instance.list, instance.preview)
     end
 
     local heading_render = instance.heading.render
@@ -318,17 +361,18 @@ local function apply_nvicode_chrome()
 end
 
 function M.setup()
+  _G.VimSCodeToggleExtension = M.toggle_selected
   normalize_disabled_telemetry()
   setup_image_support()
   apply_nvicode_chrome()
+  require("integrations.extensions_layout").setup()
   require("store").setup({
     layout = "tab",
     proportions = { list = 0.34, preview = 0.66 },
     repository_renderer = function(repo, opts)
       return {
         { content = opts.is_installed and "✓" or " ", limit = 1 },
-        { content = repo.name, limit = 24 },
-        { content = repo.description or "", limit = 70 },
+        { content = repo.name, limit = 30 },
       }
     end,
     plugin_manager = "vim.pack",

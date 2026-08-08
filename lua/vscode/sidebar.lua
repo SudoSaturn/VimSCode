@@ -14,6 +14,12 @@ local views = {
 
 local picker_sources = { "explorer", "grep", "git_status" }
 
+local function refresh_tabline()
+  vim.schedule(function()
+    vim.cmd("redrawtabline")
+  end)
+end
+
 local function valid_win(win)
   return win and vim.api.nvim_win_is_valid(win)
 end
@@ -23,14 +29,17 @@ local function editor_win(win)
   return config.relative == "" and vim.bo[vim.api.nvim_win_get_buf(win)].buftype == ""
 end
 
-local function panel_toggle_winbar()
-  return "%=%#VSCodePanelToggle#%@v:lua.VimSCodeTogglePrimarySidebar@ 󰍜 %T"
-end
-
-local function apply_panel_toggle(win)
-  if valid_win(win) and editor_win(win) then
-    vim.wo[win].winbar = panel_toggle_winbar()
+local function terminal_parent_win()
+  local current = vim.api.nvim_get_current_win()
+  if editor_win(current) then
+    return current
   end
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    if editor_win(win) then
+      return win
+    end
+  end
+  return current
 end
 
 local function tab_key()
@@ -39,9 +48,16 @@ end
 
 local function panel_layout()
   return {
-    preset = "sidebar",
     preview = false,
-    layout = { position = "left", width = panel_width },
+    on_close = refresh_tabline,
+    layout = {
+      position = "left",
+      width = panel_width,
+      box = "vertical",
+      { win = "input", height = 1, border = "none" },
+      { win = "list", border = "none" },
+      { win = "preview", title = "{preview}", height = 0.4, border = "top" },
+    },
   }
 end
 
@@ -160,10 +176,18 @@ local function current_picker()
   end
 end
 
+local function hide_picker_flags(picker)
+  local input = picker and picker.layout and picker.layout.wins and picker.layout.wins.input
+  if input then
+    input.meta.title_tpl = "{title}"
+    picker:update_titles()
+  end
+end
+
 local function set_win_options(win)
   local options = {
     cursorcolumn = false,
-    cursorline = true,
+    cursorline = false,
     foldcolumn = "0",
     list = false,
     number = false,
@@ -178,7 +202,7 @@ local function set_win_options(win)
   end
   vim.api.nvim_set_option_value(
     "winhighlight",
-    "Normal:VSCodeActivityBar,NormalNC:VSCodeActivityBar,CursorLine:VSCodeActivityHover,EndOfBuffer:VSCodeActivityBar",
+    "Normal:VSCodeActivityBar,NormalNC:VSCodeActivityBar,EndOfBuffer:VSCodeActivityBar",
     { win = win }
   )
 end
@@ -197,7 +221,7 @@ local function render(win)
 
   local actions = {}
   for index, view in ipairs(views) do
-    local line = index * 2
+    local line = index * 2 - 1
     lines[line] = " " .. view.icon
     actions[line] = view.id
   end
@@ -276,12 +300,26 @@ end
 
 function M.set_active(id)
   state.active = id
+  local label = ""
+  local icon = ""
+  for _, view in ipairs(views) do
+    if view.id == id then
+      label = view.label
+      icon = view.icon
+      break
+    end
+  end
+  vim.g.nvicode_sidebar_title = label
+  vim.g.nvicode_sidebar_icon = icon
   for _, win in pairs(state.windows) do
     render(win)
   end
+  refresh_tabline()
 end
 
 local function finish_open(id, picker, focus)
+  hide_picker_flags(picker)
+  refresh_tabline()
   M.set_active(id)
   vim.schedule(function()
     M.ensure()
@@ -358,6 +396,25 @@ function M.toggle_panel()
   end
 end
 
+function M.close_panel()
+  local picker = current_picker()
+  if picker then
+    picker:close()
+  end
+  close_extensions()
+  refresh_tabline()
+  M.set_active(nil)
+  M.ensure()
+end
+
+function M.toggle_terminal_panel()
+  local terminal = Snacks.terminal.list()[1]
+  if terminal then
+    return terminal:toggle()
+  end
+  return Snacks.terminal.toggle(nil, { win = { relative = "win", win = terminal_parent_win() } })
+end
+
 function M.focus_activity_bar()
   M.ensure()
   local win = state.windows[tab_key()]
@@ -367,10 +424,9 @@ function M.focus_activity_bar()
 end
 
 function M.setup()
-  _G.VimSCodeTogglePrimarySidebar = function()
-    M.toggle_panel()
+  _G.VimSCodeToggleTerminalPanel = function()
+    M.toggle_terminal_panel()
   end
-  apply_panel_toggle(vim.api.nvim_get_current_win())
 
   local group = vim.api.nvim_create_augroup("nvicode_activity_bar", { clear = true })
   vim.api.nvim_create_autocmd({ "WinResized", "ColorScheme" }, {
@@ -385,15 +441,6 @@ function M.setup()
       end
     end,
   })
-  vim.api.nvim_create_autocmd({ "BufWinEnter", "WinEnter", "WinNew" }, {
-    group = group,
-    callback = function()
-      vim.schedule(function()
-        apply_panel_toggle(vim.api.nvim_get_current_win())
-      end)
-    end,
-  })
-
   vim.api.nvim_create_user_command("ActivityBar", M.focus_activity_bar, { desc = "Focus the VS Code activity bar" })
   vim.api.nvim_create_user_command("Explorer", M.open_explorer, { desc = "Open the Explorer side bar" })
 end

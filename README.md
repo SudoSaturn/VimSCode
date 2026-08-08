@@ -1,8 +1,9 @@
 # VimSCode
 
-I made this so it has a VSCode feel to it, activity bar and side views, tabs, search,
-terminal, git tools, autocomplete, debugging, settings/theme/extension search,
-and familiar shortcuts.
+I made this so it has a VSCode feel to it. 
+Neovim is awesome and extremly powerful but i feel that many of its features could be more accessible.
+
+![screenshot](screenshot.png)
 
 ## install
 

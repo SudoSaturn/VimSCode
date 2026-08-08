@@ -6,6 +6,10 @@ local function setup_colorscheme()
 end
 
 local function setup_snacks()
+  require("nvim-web-devicons").setup({
+    color_icons = true,
+    default = true,
+  })
   require("snacks").setup({
     bigfile = { enabled = true },
     dashboard = { enabled = false },
@@ -22,7 +26,17 @@ local function setup_snacks()
           auto_close = false,
           follow_file = true,
           hidden = true,
-          layout = { preset = "sidebar", layout = { position = "left", width = 38 } },
+          layout = {
+            preview = false,
+            layout = {
+              position = "left",
+              width = 38,
+              box = "vertical",
+              { win = "input", height = 1, border = "none" },
+              { win = "list", border = "none" },
+              { win = "preview", title = "{preview}", height = 0.4, border = "top" },
+            },
+          },
           win = {
             list = {
               keys = {
@@ -48,12 +62,37 @@ local function setup_snacks()
     quickfile = { enabled = true },
     scope = { enabled = true },
     scroll = { enabled = true },
-    terminal = { enabled = true, win = { position = "bottom", height = 0.32, border = "top" } },
+    terminal = {
+      enabled = true,
+      win = {
+        position = "bottom",
+        height = 0.32,
+        on_win = function(self)
+          vim.wo[self.win].winbar = ""
+        end,
+      },
+    },
     words = { enabled = true },
     zen = { enabled = true },
   })
   Snacks.input.enable()
   vim.ui.select = Snacks.picker.select
+end
+
+local function workbench_layout()
+  local editor_column
+  local has_sidebar = false
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    local buffer = vim.api.nvim_win_get_buf(win)
+    local config = vim.api.nvim_win_get_config(win)
+    local filetype = vim.bo[buffer].filetype
+    has_sidebar = has_sidebar or filetype == "snacks_layout_box" or filetype == "nvicode_extensions_header"
+    if config.relative == "" and vim.bo[buffer].buftype == "" then
+      local column = vim.api.nvim_win_get_position(win)[2]
+      editor_column = not editor_column and column or math.min(editor_column, column)
+    end
+  end
+  return editor_column or 0, has_sidebar
 end
 
 local function setup_bufferline()
@@ -63,8 +102,48 @@ local function setup_bufferline()
       close_command = function(bufnr)
         Snacks.bufdelete(bufnr)
       end,
+      custom_areas = {
+        left = function()
+          local width, has_sidebar = workbench_layout()
+          if width == 0 then
+            return {}
+          end
+          local palette = require("vscode.theme").palette()
+          local title = has_sidebar and vim.g.nvicode_sidebar_title or ""
+          if title == "" then
+            return { { text = string.rep(" ", width), fg = palette.background, bg = palette.background } }
+          end
+          local icon = vim.g.nvicode_sidebar_icon or ""
+          local prefix = string.rep(" ", 5) .. icon .. " "
+          local used = vim.fn.strdisplaywidth(prefix .. title)
+          local rule = math.max(width - used - 1, 0)
+          local rule_text = rule > 0 and string.rep("─", rule - 1) .. "╮" or ""
+          return {
+            { text = prefix, fg = palette.accent, bg = palette.background },
+            { text = title, fg = palette.foreground, bg = palette.background, bold = true },
+            { text = " " .. rule_text, fg = palette.separator, bg = palette.background },
+          }
+        end,
+        right = function()
+          local palette = require("vscode.theme").palette()
+          return {
+            { text = "%@v:lua.VimSCodeToggleTerminalPanel@ 󰆍 %T", fg = palette.muted, bg = palette.background },
+          }
+        end,
+      },
+      custom_filter = function(bufnr)
+        local filetype = vim.bo[bufnr].filetype
+        return vim.bo[bufnr].buftype == "" and not filetype:match("^snacks_") and not filetype:match("^nvicode_")
+      end,
+      color_icons = false,
       diagnostics = "nvim_lsp",
       enforce_regular_tabs = true,
+      get_element_icon = function(element)
+        local icon = require("nvim-web-devicons").get_icon(vim.fn.fnamemodify(element.path, ":t"), element.extension, {
+          default = true,
+        })
+        return icon
+      end,
       indicator = { icon = "", style = "icon" },
       modified_icon = "●",
       separator_style = { "", "" },
@@ -130,6 +209,7 @@ function M.setup()
   setup_colorscheme()
   setup_snacks()
   setup_bufferline()
+  require("vscode.theme").apply()
   setup_lualine()
   setup_which_key()
 end

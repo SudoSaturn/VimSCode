@@ -29,7 +29,16 @@ vim.api.nvim_create_autocmd("VimEnter", {
   group = group,
   once = true,
   callback = function()
-    if #vim.api.nvim_list_uis() > 0 then
+    local workspace = vim.fn.argc() == 0
+    if not workspace then
+      for index = 0, vim.fn.argc() - 1 do
+        if vim.fn.isdirectory(vim.fn.argv(index)) == 1 then
+          workspace = true
+          break
+        end
+      end
+    end
+    if workspace and #vim.api.nvim_list_uis() > 0 then
       vim.schedule(function()
         require("vscode.sidebar").open_explorer()
       end)
