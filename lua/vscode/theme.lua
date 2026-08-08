@@ -10,6 +10,19 @@ local function color(group, field, fallback)
   return fallback
 end
 
+local function blend(background, foreground, amount)
+  local br, bg, bb = background:match("^#(%x%x)(%x%x)(%x%x)$")
+  local fr, fg, fb = foreground:match("^#(%x%x)(%x%x)(%x%x)$")
+  if not br or not fr then
+    return
+  end
+
+  local function mix(a, b)
+    return math.floor(tonumber(a, 16) * (1 - amount) + tonumber(b, 16) * amount + 0.5)
+  end
+  return string.format("#%02x%02x%02x", mix(br, fr), mix(bg, fg), mix(bb, fb))
+end
+
 function M.palette()
   local background = color("Normal", "bg", "bg")
   local foreground = color("Normal", "fg", "fg")
@@ -82,6 +95,10 @@ function M.apply()
   -- Explorer folder labels should use the same foreground as the active editor theme.
   vim.api.nvim_set_hl(0, "SnacksPickerDirectory", { fg = palette.foreground })
   vim.api.nvim_set_hl(0, "SnacksPickerDir", { fg = palette.foreground })
+  vim.api.nvim_set_hl(0, "SnacksPickerListCursorLine", {
+    fg = palette.foreground,
+    bg = blend(palette.background, palette.foreground, 0.14) or palette.hover,
+  })
 
   vim.api.nvim_set_hl(0, "vimscodeSettings", { fg = palette.foreground, bg = palette.panel })
   vim.api.nvim_set_hl(0, "vimscodeSettingsBorder", { fg = palette.border, bg = palette.panel })
