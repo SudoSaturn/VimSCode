@@ -37,6 +37,7 @@ local plugins = {
 
   github("OXY2DEV/markview.nvim"),
   github("alex-popov-tech/store.nvim"),
+  github("3rd/image.nvim"),
 }
 
 local function load_store_extensions()

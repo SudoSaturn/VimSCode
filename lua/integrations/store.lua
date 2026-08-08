@@ -1,6 +1,45 @@
 local M = {}
 local current_instance
 
+local function normalize_disabled_telemetry()
+  local telemetry = require("store.telemetry")
+  if telemetry._vimscode_normalized then
+    return
+  end
+
+  local fetch_stats = telemetry.fetch_stats
+  telemetry.fetch_stats = function(period, callback)
+    if not require("store.config").get().telemetry then
+      callback({ installs = {}, views = {} }, nil)
+      return
+    end
+    fetch_stats(period, callback)
+  end
+  telemetry._vimscode_normalized = true
+end
+
+local function setup_image_support()
+  if vim.env.TERM ~= "xterm-kitty" or #vim.api.nvim_list_uis() == 0 then
+    return
+  end
+
+  local ok, image = pcall(require, "image")
+  if not ok then
+    return
+  end
+
+  image.setup({
+    backend = "kitty",
+    processor = "magick_cli",
+    integrations = {
+      -- Store renders README images itself to keep previews aligned with the selected extension.
+      markdown = { enabled = false },
+    },
+    max_width_window_percentage = 90,
+    max_height_window_percentage = 45,
+  })
+end
+
 local function extension_path(repo)
   local name = repo.name:gsub("[^%w%._-]", "-")
   return vim.fs.joinpath(vim.fn.stdpath("config"), "lua", "extensions", name .. ".lua")
@@ -279,6 +318,8 @@ local function apply_nvicode_chrome()
 end
 
 function M.setup()
+  normalize_disabled_telemetry()
+  setup_image_support()
   apply_nvicode_chrome()
   require("store").setup({
     layout = "tab",

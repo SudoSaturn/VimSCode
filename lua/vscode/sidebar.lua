@@ -30,6 +30,40 @@ local function panel_layout()
   }
 end
 
+local function git_root()
+  local paths = { vim.fn.getcwd() }
+  local buffer_name = vim.api.nvim_buf_get_name(0)
+  if buffer_name ~= "" and not buffer_name:match("^%w+://") then
+    table.insert(paths, 1, vim.fs.dirname(buffer_name))
+  end
+
+  for _, path in ipairs(paths) do
+    local root = vim.fs.root(path, { ".git" })
+    if root then
+      return root
+    end
+  end
+end
+
+local function empty_source_control_picker()
+  return Snacks.picker({
+    source = "git_status",
+    title = "Source Control",
+    auto_close = false,
+    layout = panel_layout(),
+    finder = function()
+      return {
+        { text = "No repository opened", hl = "Title" },
+        { text = "Open a folder containing a Git repository to view changes.", hl = "Comment" },
+      }
+    end,
+    format = function(item)
+      return { { item.text, item.hl } }
+    end,
+    confirm = function() end,
+  })
+end
+
 local function close_pickers(except)
   for _, source in ipairs(picker_sources) do
     if source ~= except then
@@ -230,10 +264,15 @@ function M.open_source_control()
   if not begin_open("source_control") then
     return
   end
+  local root = git_root()
   close_extensions()
   close_pickers("git_status")
+  if not root then
+    local picker = existing_picker("git_status") or empty_source_control_picker()
+    return finish_open("source_control", picker, "list")
+  end
   local picker = existing_picker("git_status")
-    or Snacks.picker.git_status({ auto_close = false, layout = panel_layout() })
+    or Snacks.picker.git_status({ auto_close = false, cwd = root, layout = panel_layout() })
   return finish_open("source_control", picker, "list")
 end
 
