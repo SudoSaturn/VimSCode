@@ -84,10 +84,14 @@ local function empty_source_control_picker()
     finder = function()
       return {
         { text = "No repostry found", hl = "Title" },
+        { spacer = true },
         { text = "Initialize Repostry", button = true },
       }
     end,
     format = function(item)
+      if item.spacer then
+        return { { " " } }
+      end
       if item.button then
         return {
           {
