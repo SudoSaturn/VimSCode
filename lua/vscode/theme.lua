@@ -1,4 +1,5 @@
 local M = {}
+local terminal_palette
 
 local function color(group, field, fallback)
   local highlight = vim.api.nvim_get_hl(0, { name = group, link = false })
@@ -27,7 +28,49 @@ function M.palette()
   }
 end
 
+local function query_kitty_palette()
+  if vim.fn.executable("kitty") ~= 1 then
+    return
+  end
+  if vim.env.TERM ~= "xterm-kitty" and not vim.env.KITTY_WINDOW_ID and not vim.env.KITTY_LISTEN_ON then
+    return
+  end
+
+  local result = vim.system({ "kitty", "@", "get-colors" }, { text = true }):wait(250)
+  if result.code ~= 0 then
+    return
+  end
+
+  local colors = {}
+  for name, value in result.stdout:gmatch("([%a_]+)%s+(#%x%x%x%x%x%x)") do
+    colors[name] = value:lower()
+  end
+  if colors.background and colors.foreground then
+    return colors
+  end
+end
+
+local function terminal_active()
+  return vim.g.colors_name == "default" and terminal_palette ~= nil
+end
+
+local function apply_terminal_palette()
+  if not terminal_active() then
+    return
+  end
+
+  local colors = terminal_palette
+  vim.api.nvim_set_hl(0, "Normal", { fg = colors.foreground, bg = colors.background })
+  vim.api.nvim_set_hl(0, "NormalNC", { fg = colors.foreground, bg = colors.background })
+  vim.api.nvim_set_hl(0, "NormalFloat", { fg = colors.foreground, bg = colors.background })
+  vim.api.nvim_set_hl(0, "FloatBorder", { fg = colors.foreground, bg = colors.background })
+  vim.api.nvim_set_hl(0, "StatusLine", { fg = colors.foreground, bg = colors.background })
+  vim.api.nvim_set_hl(0, "StatusLineNC", { fg = colors.foreground, bg = colors.background })
+  vim.api.nvim_set_hl(0, "EndOfBuffer", { fg = colors.background, bg = colors.background })
+end
+
 function M.apply()
+  apply_terminal_palette()
   local palette = M.palette()
 
   vim.api.nvim_set_hl(0, "VSCodeActivityBar", { fg = palette.muted, bg = palette.background })
@@ -44,7 +87,16 @@ function M.apply()
 end
 
 function M.use_terminal()
+  terminal_palette = query_kitty_palette()
   vim.cmd("colorscheme default")
+  M.apply()
+end
+
+function M.refresh_terminal()
+  if vim.g.colors_name ~= "default" then
+    return
+  end
+  terminal_palette = query_kitty_palette() or terminal_palette
   M.apply()
 end
 
@@ -54,12 +106,27 @@ function M.name()
 end
 
 function M.setup()
-  M.apply()
   local group = vim.api.nvim_create_augroup("vimscode_theme", { clear = true })
   vim.api.nvim_create_autocmd("ColorScheme", {
     group = group,
-    callback = M.apply,
+    callback = function()
+      if vim.g.colors_name == "default" then
+        if terminal_palette then
+          M.apply()
+        else
+          M.refresh_terminal()
+        end
+      else
+        terminal_palette = nil
+        M.apply()
+      end
+    end,
   })
+  vim.api.nvim_create_autocmd("FocusGained", {
+    group = group,
+    callback = M.refresh_terminal,
+  })
+  M.use_terminal()
 end
 
 return M

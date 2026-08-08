@@ -1,8 +1,7 @@
 local M = {}
 
 local function setup_colorscheme()
-  -- Neovim's default colorscheme delegates to the terminal palette.
-  vim.cmd("colorscheme default")
+  -- Use Kitty's live terminal palette when it is available.
   require("vscode.theme").setup()
 end
 
